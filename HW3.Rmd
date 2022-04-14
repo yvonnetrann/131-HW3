@@ -1,0 +1,45 @@
+---
+title: "HW3"
+output: html_document
+---
+
+``` {r}
+library(tidyverse)
+library(tidymodels)
+
+library(readr)
+titanic <- read_csv("~/Downloads/homework-3/data/titanic.csv")
+View(titanic)
+```
+# Question 1
+
+```{r}
+set.seed(891)
+
+titanic_split <- initial_split(titanic, prop = 0.8, strata = survived)
+titanic_train <- training(titanic_split)
+titanic_test <- testing(titanic_split)
+```
+
+# Question 2
+
+# Question 3
+
+# Question 4
+
+# Question 5
+
+# Question 6
+
+# Question 7
+
+# Question 8
+
+# Question 9
+
+# Question 10
+
+
+
+
+
