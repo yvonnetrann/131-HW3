@@ -20,10 +20,33 @@ titanic_split <- initial_split(titanic, prop = 0.8, strata = survived)
 titanic_train <- training(titanic_split)
 titanic_test <- testing(titanic_split)
 ```
+Training set observations: 712
+Testing set observations: 179
+
+Some variables have missing data, which is why we will used stratified sampling.
+
+It is a good idea to use stratified sampling for this data because it provides better coverage of the population as the researchers have control over the subgroups to ensure all of them are represented in the sampling.
 
 # Question 2
+```{r}
+library(ggplot2)
+ggplot(titanic_train, aes(x=survived)) +
+  geom_bar(fill='red') +  labs(x='Survived')
+
+
+  
+
+```
+From the distribution of the training data set, we can see that more individuals died than survived. The count of those who survived is a little less than 300, while the count for those who passed is greater than 400.
 
 # Question 3
+```{r}
+
+cor_titanic <- titanic_train %>%
+  select(is.numeric()) %>%
+  corr()
+
+```
 
 # Question 4
 
