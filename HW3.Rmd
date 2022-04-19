@@ -177,7 +177,7 @@ results <- tibble(accuracies = accuracies, models = models)
 results %>% 
   arrange(-accuracies)
 ```
-The model that achieved accuracy the highest was [ ....... ]
+The model that achieved accuracy the highest was the Logistic Regression model.
 
 # Question 10
 ```{r}
