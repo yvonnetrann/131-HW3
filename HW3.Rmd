@@ -12,6 +12,7 @@ library(poissonreg)
 library(corrr)
 library(klaR) 
 library(dplyr)
+library(MASS)
 tidymodels_prefer()
 
 library(readr)
@@ -21,6 +22,10 @@ View(titanic)
 # Question 1
 
 ```{r}
+
+titanic$survived <- factor(titanic$survived, levels = c("Yes","No"))
+titanic$pclass <- as.factor(titanic$pclass)
+
 set.seed(891)
 
 titanic_split <- initial_split(titanic, prop = 0.8, strata = survived)
@@ -45,21 +50,27 @@ From the distribution of the training data set, we can see that more individuals
 
 # Question 3
 ```{r}
-cor_titanic <- titanic_train %>%
-  select(passenger_id,pclass,age,sib_sp,parch,fare)  %>%
-  correlate()
-rplot(cor_titanic)
+#cor_titanic <- titanic_train %>%
+  #select(passenger_id,pclass,age,sib_sp,parch,fare)  %>%
+  #correlate()
+#rplot(cor_titanic)
 
+cor_titanic %>%
+  stretch() %>%
+  ggplot(aes(x, y, fill = r)) +
+  geom_tile() +
+  geom_text(aes(label = as.character(fashion(r))))
 ```
 [answer short answer]
 
 # Question 4
 ```{r}
-titanic_recipe <- recipe(survived ~ ticket + sex + age + sib_sp + parch + fare, data = titanic_train) %>%
-  step_impute_linear() %>%
+titanic_recipe <- recipe(survived ~ pclass + sex + age + sib_sp + parch + fare, data = titanic_train) %>%
+  step_impute_linear(age) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_interact(~starts_with("sex"):fare) %>%
-  step_interact(~age:fare)
+  step_interact(~age:fare) %>%
+  step_normalize(all_predictors())
 
 ```
 
@@ -154,8 +165,8 @@ nb_acc <- augment(nb_fit, new_data = titanic_train) %>%
 nb_acc
 
 #through bind_col
-titanic_train_res <- bind_cols(titanic_train_res, diamonds_train %>% select(survived))
-diamond_train_res %>% 
+titanic_train_res <- bind_cols(log_p, lda_p, qda_p, nb_p, titanic_train %>% select(survived))
+titanic_train_res %>% 
   head()
 
 #comparing model performance through accuracy test
@@ -170,17 +181,17 @@ The model that achieved accuracy the highest was [ ....... ]
 
 # Question 10
 ```{r}
-predict(nb_fit, new_data = titanic_test, type = "prob")
-augment(nb_fit, new_data = titanic_test) %>%
+predict(log_fit, new_data = titanic_test, type = "prob")
+augment(log_fit, new_data = titanic_test) %>%
   conf_mat(truth = survived, estimate = .pred_class) 
 
 multi_metric <- metric_set(accuracy, sensitivity, specificity)
 
-augment(nb_fit, new_data = titanic_test) %>%
+augment(log_fit, new_data = titanic_test) %>%
   multi_metric(truth = survived, estimate = .pred_class)
 
-augment(nb_fit, new_data = titanic_test) %>%
-  roc_curve(survied, .pred_Down) %>%
+augment(log_fit, new_data = titanic_test) %>%
+  roc_curve(survived, .pred_Down) %>%
   autoplot()
 ```
 
